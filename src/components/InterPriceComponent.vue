@@ -1,7 +1,6 @@
 <script>
-import CurrencySwitcher from "./CurrencySwitcher.vue";
-import YearsSwitcher from "./YearsSwitcher.vue";
-import DisplaySwitcher from "./DisplaySwitcher.vue";
+import ToggleSingle from "./ToggleSingle.vue";
+import ToggleMulti from "./ToggleMulti.vue";
 import data from "../data.json";
 
 function extractCurrencies(data) {
@@ -39,6 +38,7 @@ export default {
       displays: displays,
       selectedDisplay: displays[0],
       selectedYears: extractYears(data, selectedCurrency),
+      companyFilter: "",
     };
   },
   methods: {
@@ -48,7 +48,6 @@ export default {
     },
     handleYearsChange: function (years) {
       this.selectedYears = years;
-      console.log(years);
     },
     handleDisplayChange: function (display) {
       this.selectedDisplay = display;
@@ -60,20 +59,27 @@ export default {
     },
   },
   components: {
-    CurrencySwitcher,
-    YearsSwitcher,
-    DisplaySwitcher,
+    ToggleSingle,
+    ToggleMulti,
   },
 };
 </script>
 
 <template>
-  <div class="flex gap-8">
-    <CurrencySwitcher
-      v-on:switch="handleCurrencyChange"
-      :currencies="currencies"
-    />
-    <YearsSwitcher v-on:switch="handleYearsChange" :years="years" />
-    <DisplaySwitcher v-on:switch="handleDisplayChange" :displays="displays" />
+  <div>
+    <div class="flex gap-8">
+      <ToggleSingle v-on:toggle="handleCurrencyChange" :items="currencies" />
+      <ToggleMulti v-on:toggle="handleYearsChange" :items="years" />
+      <ToggleSingle v-on:toggle="handleDisplayChange" :items="displays" />
+    </div>
+    <div>
+      <input
+        class="border border-slate-500 rounded mt-5 py-1 px-2 w-80"
+        type="text"
+        v-model="companyFilter"
+        placeholder="Filter by company name ..."
+        autocomplete="off"
+      />
+    </div>
   </div>
 </template>

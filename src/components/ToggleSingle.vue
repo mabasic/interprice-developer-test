@@ -1,18 +1,18 @@
 <script>
 export default {
   props: {
-    displays: Array,
+    items: Array,
   },
   data: function () {
     return {
-      activeDisplay: this.displays?.[0],
+      active: this.items?.[0],
     };
   },
   methods: {
-    setActiveDisplay: function (display) {
-      this.activeDisplay = display;
+    setActive: function (item) {
+      this.active = item;
 
-      this.$emit("switch", display);
+      this.$emit("toggle", item);
     },
   },
 };
@@ -24,13 +24,13 @@ export default {
       type="button"
       class="border-t border-b border-r first:border-l first:rounded-tl first:rounded-bl last:rounded-tr last:rounded-br border-slate-500 px-2 py-1"
       v-bind:class="[
-        activeDisplay === display ? 'bg-slate-500 text-white' : '',
+        active === item ? 'bg-slate-500 text-white' : 'text-slate-500',
       ]"
-      v-for="display in displays"
-      @click="setActiveDisplay(display)"
-      :key="display"
+      v-for="item in items"
+      @click="setActive(item)"
+      :key="item"
     >
-      {{ display }}
+      {{ item }}
     </button>
   </div>
 </template>
