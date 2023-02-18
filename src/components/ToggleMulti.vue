@@ -1,4 +1,6 @@
 <script>
+import numericSort from "../helpers/numeric-sort";
+
 export default {
   props: {
     items: Array,
@@ -15,7 +17,7 @@ export default {
       if (activeItemIndex > -1) {
         this.active = this.active.filter((activeItem) => activeItem !== item);
       } else {
-        this.active = [...this.active, item];
+        this.active = [...this.active, item].sort(numericSort);
       }
 
       this.$emit("toggle", this.active);

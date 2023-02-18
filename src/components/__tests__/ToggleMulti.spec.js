@@ -25,14 +25,14 @@ describe("ToggleMulti", () => {
 
     expect(wrapper.vm.active).toEqual(items);
 
-    const dummyItems = ["Something"]
+    const dummyItems = ["Something"];
 
     await wrapper.setProps({
-      items: dummyItems
-    })
+      items: dummyItems,
+    });
 
     expect(wrapper.vm.active).toEqual(dummyItems);
-  })
+  });
 
   it("triggers toggle event properly", async () => {
     const wrapper = mount(ToggleMulti, { propsData: { items } });
