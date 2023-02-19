@@ -2,7 +2,7 @@
 import ChevronDown from "./ChevronDown.vue";
 import ChevronRight from "./ChevronRight.vue";
 import { Fragment } from "vue-frag";
-import DISPLAYS, { SPREAD, YIELD, THREE_ML_SPREAD } from "../constants/Display";
+import DISPLAYS, { format as formatDisplay } from "../constants/Display";
 import { FIX, FRN } from "../constants/CouponType";
 
 export default {
@@ -11,6 +11,7 @@ export default {
     selectedYears: Array,
     selectedDisplay: String,
     selectedCurrency: String,
+    minimumValues: Object,
   },
   created() {
     this.FIX = FIX;
@@ -32,6 +33,23 @@ export default {
     ChevronRight,
   },
   methods: {
+    getQuoteValues: function (display0 = null) {
+      const display = display0 || this.selectedDisplay;
+
+      return this.selectedYears.reduce(
+        (acc, selectedYear) => ({
+          ...acc,
+          [selectedYear]: {
+            FIX: this.getQuoteValue(selectedYear, FIX, display),
+            FRN: this.getQuoteValue(selectedYear, FRN, display),
+          },
+        }),
+        {}
+      );
+    },
+    isMinimum: function (value, year, couponType) {
+      return value === this.minimumValues[year][couponType];
+    },
     getQuoteValue: function (year, couponType, display0 = null) {
       const display = display0 || this.selectedDisplay;
 
@@ -46,15 +64,7 @@ export default {
         return "";
       }
 
-      switch (display) {
-        case SPREAD:
-        case THREE_ML_SPREAD:
-          return `${value > 0 ? "+" : ""}${parseInt(value)}bp`;
-        case YIELD:
-          return `${parseFloat(value).toFixed(3)}%`;
-        default:
-          return value;
-      }
+      return formatDisplay(display, value);
     },
   },
 };
@@ -75,19 +85,31 @@ export default {
         {{ item.DateSent }}
       </td>
       <td class="py-2 font-bold">{{ item.Company }}</td>
-      <template v-for="selectedYear in selectedYears">
-        <td class="text-center py-2" v-bind:key="selectedYear + FIX">
-          {{ getQuoteValue(selectedYear, FIX) }}
+      <template v-for="(values, selectedYear) in getQuoteValues()">
+        <td
+          class="text-center py-2"
+          v-bind:class="[
+            isMinimum(values[FIX], selectedYear, FIX) ? 'bg-yellow-100' : '',
+          ]"
+          v-bind:key="`${item.Company}-${item.Id}-${selectedYear}-${FIX}`"
+        >
+          {{ values[FIX] }}
         </td>
-        <td class="text-center py-2" v-bind:key="selectedYear + FRN">
-          {{ getQuoteValue(selectedYear, FRN) }}
+        <td
+          class="text-center py-2"
+          v-bind:class="[
+            isMinimum(values[FRN], selectedYear, FRN) ? 'bg-yellow-100' : '',
+          ]"
+          v-bind:key="`${item.Company}-${item.Id}-${selectedYear}-${FRN}`"
+        >
+          {{ values[FRN] }}
         </td>
       </template>
     </tr>
-    <Fragment v-if="expanded === true && otherDisplays.length > 0">
+    <template v-if="expanded === true && otherDisplays.length > 0">
       <tr
         v-for="otherDisplay in otherDisplays"
-        v-bind:key="otherDisplay"
+        v-bind:key="`${item.Company}-${item.Id}-${otherDisplay}`"
         class="border-b border-gray-500"
       >
         <td class="py-2"></td>
@@ -107,6 +129,6 @@ export default {
           </td>
         </template>
       </tr>
-    </Fragment>
+    </template>
   </Fragment>
 </template>

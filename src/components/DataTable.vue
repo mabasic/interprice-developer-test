@@ -6,6 +6,7 @@ import pipe from "../helpers/pipe";
 import numericSort from "../helpers/numeric-sort";
 import DropdownRow from "./DropdownRow.vue";
 import { FIX, FRN } from "../constants/CouponType";
+import { format as formatDisplay } from "../constants/Display";
 
 function extractItemsWithNoQuote(data) {
   return data.filter((item) => !item.Quote);
@@ -129,6 +130,42 @@ export default {
         formatDateSent
       );
     },
+    minimumValuesByYearAndCouponType: function () {
+      const getMinimumValue = (year, couponType) =>
+        Math.min(
+          ...this.quoteItems
+            .flatMap((item) => item.Quote)
+            .filter(
+              (quote) =>
+                quote.Years === year &&
+                quote.CouponType === couponType &&
+                quote.Currency === this.selectedCurrency
+            )
+            .map((quote) => quote[this.selectedDisplay])
+            .filter(Boolean)
+        );
+
+      const formatOrNull = (year, couponType) => {
+        const minimumValue = getMinimumValue(year, couponType);
+
+        if (minimumValue === Infinity) {
+          return null;
+        }
+
+        return formatDisplay(this.selectedDisplay, minimumValue);
+      };
+
+      return this.selectedYears.reduce(
+        (acc, selectedYear) => ({
+          ...acc,
+          [selectedYear]: {
+            FIX: formatOrNull(selectedYear, FIX),
+            FRN: formatOrNull(selectedYear, FRN),
+          },
+        }),
+        {}
+      );
+    },
   },
   components: {
     SortButton,
@@ -140,6 +177,27 @@ export default {
       // NOTE: When the user changes the sort column,
       // the sort direction should be descending.
       this.sortDirection = DESC;
+    },
+    getAverageQuoteValue: function (year, couponType) {
+      const values = this.quoteItems
+        .flatMap((item) => item.Quote)
+        .filter(
+          (quote) =>
+            quote.CouponType === couponType &&
+            quote.Years === year &&
+            quote.Currency === this.selectedCurrency
+        )
+        .map((quote) => quote[this.selectedDisplay]);
+
+      // NOTE: Prevents division by 0; NaN
+      if (values.length === 0) {
+        return 0;
+      }
+
+      return formatDisplay(
+        this.selectedDisplay,
+        values.reduce((acc, val) => acc + val, 0) / values.length
+      );
     },
   },
 };
@@ -195,16 +253,17 @@ export default {
     <tbody>
       <DropdownRow
         v-for="item in quoteItems"
-        v-bind:key="item.Id"
+        v-bind:key="`${item.Company}-${item.Id}`"
         :item="item"
         :selectedYears="selectedYears"
         :selectedDisplay="selectedDisplay"
         :selectedCurrency="selectedCurrency"
+        :minimumValues="minimumValuesByYearAndCouponType"
       >
       </DropdownRow>
       <tr
         v-for="item in noQuoteItems"
-        v-bind:key="item.Id"
+        v-bind:key="`${item.Company}-${item.Id}`"
         class="border-b border-gray-500"
       >
         <td class="py-2">{{ item.DateSent }}</td>
@@ -212,6 +271,18 @@ export default {
         <template v-for="selectedYear in selectedYears">
           <td class="py-2" v-bind:key="selectedYear + FIX"></td>
           <td class="py-2" v-bind:key="selectedYear + FRN"></td>
+        </template>
+      </tr>
+      <tr class="border-2 border-gray-500">
+        <td class="py-2"></td>
+        <td class="py-2">Average by {{ selectedDisplay }}</td>
+        <template v-for="selectedYear in selectedYears">
+          <td class="py-2 text-center" v-bind:key="selectedYear + FIX">
+            {{ getAverageQuoteValue(selectedYear, FIX) || "" }}
+          </td>
+          <td class="py-2 text-center" v-bind:key="selectedYear + FRN">
+            {{ getAverageQuoteValue(selectedYear, FRN) || "" }}
+          </td>
         </template>
       </tr>
     </tbody>
