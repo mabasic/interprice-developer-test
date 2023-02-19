@@ -93,7 +93,7 @@ export default {
       :selectedDisplay="selectedDisplay"
       :displays="displays"
       :selectedCurrency="selectedCurrency"
-      :items="JSONDATA"
+      :items="JSONDATA.Items"
     />
   </div>
 </template>

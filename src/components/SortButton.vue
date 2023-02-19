@@ -8,6 +8,7 @@ export default {
     sortColumn: String,
     sortDirection: String,
     label: String,
+    column: String,
   },
   created() {
     this.ASC = ASC;
@@ -35,17 +36,17 @@ export default {
 </script>
 
 <template>
-  <button type="button" @click="changeSortDirection(label)">
+  <button type="button" @click="changeSortDirection(column)">
     <span class="uppercase">{{ label }}</span>
     <CaretDown
-      v-if="sortDirection === DESC && sortColumn === label"
+      v-if="sortDirection === DESC && sortColumn === column"
       class="ml-1"
-      v-bind:class="[sortColumn === label ? 'text-gray-800' : '']"
+      v-bind:class="[sortColumn === column ? 'text-gray-800' : '']"
     />
     <CaretUp
       v-else
       class="ml-1"
-      v-bind:class="[sortColumn === label ? 'text-gray-800' : '']"
+      v-bind:class="[sortColumn === column ? 'text-gray-800' : '']"
     />
   </button>
 </template>
