@@ -4,10 +4,8 @@ import { DATE_SENT, COMPANY } from "../constants/SortColumn";
 import { DESC, ASC } from "../constants/SortDirection";
 import pipe from "../helpers/pipe";
 import numericSort from "../helpers/numeric-sort";
-import { SPREAD, YIELD, THREE_ML_SPREAD } from "../constants/Display";
-
-const FIX = "FIX";
-const FRN = "FRN";
+import DropdownRow from "./DropdownRow.vue";
+import { FIX, FRN } from "../constants/CouponType";
 
 function extractItemsWithNoQuote(data) {
   return data.filter((item) => !item.Quote);
@@ -134,6 +132,7 @@ export default {
   },
   components: {
     SortButton,
+    DropdownRow,
   },
   methods: {
     handleSortColumnChange: function (sortColumn) {
@@ -141,30 +140,6 @@ export default {
       // NOTE: When the user changes the sort column,
       // the sort direction should be descending.
       this.sortDirection = DESC;
-    },
-    getQuoteValue: function (item, year, couponType, display0 = null) {
-      const display = display0 || this.selectedDisplay;
-
-      const value = item.Quote.filter(
-        (item) =>
-          item.Years === year &&
-          item.CouponType === couponType &&
-          item.Currency === this.selectedCurrency
-      )[0]?.[display];
-
-      if (typeof value === "undefined" || value === null) {
-        return "";
-      }
-
-      switch (display) {
-        case SPREAD:
-        case THREE_ML_SPREAD:
-          return `${value > 0 ? "+" : ""}${parseInt(value)}bp`;
-        case YIELD:
-          return `${parseFloat(value).toFixed(3)}%`;
-        default:
-          return value;
-      }
     },
   },
 };
@@ -197,9 +172,11 @@ export default {
           width="200"
           v-for="selectedYear in selectedYears"
           v-bind:key="selectedYear"
-          class="px-1 last:pr-0 "
+          class="px-1 last:pr-0"
         >
-          <div class="border-b-2 border-b-gray-500 font-bold text-gray-800 text-center">
+          <div
+            class="border-b-2 border-b-gray-500 font-bold text-gray-800 text-center"
+          >
             {{ selectedYear }} YRS
           </div>
         </td>
@@ -216,22 +193,15 @@ export default {
       </tr>
     </thead>
     <tbody>
-      <tr
+      <DropdownRow
         v-for="item in quoteItems"
         v-bind:key="item.Id"
-        class="border-b border-gray-500"
+        :item="item"
+        :selectedYears="selectedYears"
+        :selectedDisplay="selectedDisplay"
+        :selectedCurrency="selectedCurrency"
       >
-        <td class="py-2">{{ item.DateSent }}</td>
-        <td class="py-2 font-bold">{{ item.Company }}</td>
-        <template v-for="selectedYear in selectedYears">
-          <td class="text-center py-2" v-bind:key="selectedYear + FIX">
-            {{ getQuoteValue(item, selectedYear, FIX) }}
-          </td>
-          <td class="text-center py-2" v-bind:key="selectedYear + FRN">
-            {{ getQuoteValue(item, selectedYear, FRN) }}
-          </td>
-        </template>
-      </tr>
+      </DropdownRow>
       <tr
         v-for="item in noQuoteItems"
         v-bind:key="item.Id"

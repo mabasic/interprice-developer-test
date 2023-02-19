@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "pinia": "^2.0.16",
-    "vue": "^2.7.7"
+    "vue": "^2.7.7",
+    "vue-frag": "^1.4.2"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.0",
