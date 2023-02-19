@@ -4,6 +4,7 @@ import ToggleMulti from "./ToggleMulti.vue";
 import DataTable from "./DataTable.vue";
 import JSONDATA from "../data.json";
 import numericSort from "../helpers/numeric-sort";
+import DISPLAYS from "../constants/Display";
 
 function extractCurrencies(data) {
   return [
@@ -35,13 +36,12 @@ export default {
   data: function () {
     const currencies = extractCurrencies(JSONDATA);
     const selectedCurrency = currencies?.[0];
-    const displays = ["Spread", "Yield", "3MLSpread"];
 
     return {
       currencies: currencies,
       selectedCurrency: selectedCurrency,
-      displays: displays,
-      selectedDisplay: displays[0],
+      displays: DISPLAYS,
+      selectedDisplay: DISPLAYS[0],
       selectedYears: extractYears(JSONDATA, selectedCurrency),
       companyFilter: "",
     };

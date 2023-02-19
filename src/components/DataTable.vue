@@ -4,6 +4,10 @@ import { DATE_SENT, COMPANY } from "../constants/SortColumn";
 import { DESC, ASC } from "../constants/SortDirection";
 import pipe from "../helpers/pipe";
 import numericSort from "../helpers/numeric-sort";
+import { SPREAD, YIELD, THREE_ML_SPREAD } from "../constants/Display";
+
+const FIX = "FIX";
+const FRN = "FRN";
 
 function extractItemsWithNoQuote(data) {
   return data.filter((item) => !item.Quote);
@@ -97,6 +101,8 @@ export default {
   created() {
     this.DATE_SENT = DATE_SENT;
     this.COMPANY = COMPANY;
+    this.FIX = FIX;
+    this.FRN = FRN;
   },
   data: function () {
     return {
@@ -131,10 +137,34 @@ export default {
   },
   methods: {
     handleSortColumnChange: function (sortColumn) {
+      this.sortColumn = sortColumn;
       // NOTE: When the user changes the sort column,
       // the sort direction should be descending.
-      this.sortColumn = sortColumn;
       this.sortDirection = DESC;
+    },
+    getQuoteValue: function (item, year, couponType, display0 = null) {
+      const display = display0 || this.selectedDisplay;
+
+      const value = item.Quote.filter(
+        (item) =>
+          item.Years === year &&
+          item.CouponType === couponType &&
+          item.Currency === this.selectedCurrency
+      )[0]?.[display];
+
+      if (typeof value === "undefined" || value === null) {
+        return "";
+      }
+
+      switch (display) {
+        case SPREAD:
+        case THREE_ML_SPREAD:
+          return `${value > 0 ? "+" : ""}${parseInt(value)}bp`;
+        case YIELD:
+          return `${parseFloat(value).toFixed(3)}%`;
+        default:
+          return value;
+      }
     },
   },
 };
@@ -143,8 +173,8 @@ export default {
 <template>
   <table class="w-full">
     <thead class="text-gray-500">
-      <tr class="border-b-2 border-gray-500">
-        <td class="text-center align-bottom">
+      <tr>
+        <td rowspan="2" width="200" class="text-center align-bottom">
           <SortButton
             label="Date Sent"
             :column="DATE_SENT"
@@ -153,7 +183,7 @@ export default {
             v-bind:sortDirection.sync="sortDirection"
           />
         </td>
-        <td class="align-bottom">
+        <td rowspan="2" class="align-bottom">
           <SortButton
             :label="COMPANY"
             :column="COMPANY"
@@ -162,19 +192,27 @@ export default {
             v-bind:sortDirection.sync="sortDirection"
           />
         </td>
-        <td v-for="selectedYear in selectedYears" v-bind:key="selectedYear">
-          <div class="px-2">
-            <div
-              class="text-center border-b-2 border-b-gray-500 font-bold text-gray-800"
-            >
-              {{ selectedYear }} YRS
-            </div>
-            <div class="flex justify-around">
-              <span>FIX</span>
-              <span>FRN</span>
-            </div>
+        <td
+          colspan="2"
+          width="200"
+          v-for="selectedYear in selectedYears"
+          v-bind:key="selectedYear"
+          class="px-1 last:pr-0 "
+        >
+          <div class="border-b-2 border-b-gray-500 font-bold text-gray-800 text-center">
+            {{ selectedYear }} YRS
           </div>
         </td>
+      </tr>
+      <tr class="border-b-2 border-gray-500">
+        <template v-for="selectedYear in selectedYears">
+          <td v-bind:key="selectedYear + FIX" width="100" class="text-center">
+            FIX
+          </td>
+          <td v-bind:key="selectedYear + FRN" width="100" class="text-center">
+            FRN
+          </td>
+        </template>
       </tr>
     </thead>
     <tbody>
@@ -185,11 +223,14 @@ export default {
       >
         <td class="py-2">{{ item.DateSent }}</td>
         <td class="py-2 font-bold">{{ item.Company }}</td>
-        <td
-          class="py-2"
-          v-for="selectedYear in selectedYears"
-          v-bind:key="selectedYear"
-        ></td>
+        <template v-for="selectedYear in selectedYears">
+          <td class="text-center py-2" v-bind:key="selectedYear + FIX">
+            {{ getQuoteValue(item, selectedYear, FIX) }}
+          </td>
+          <td class="text-center py-2" v-bind:key="selectedYear + FRN">
+            {{ getQuoteValue(item, selectedYear, FRN) }}
+          </td>
+        </template>
       </tr>
       <tr
         v-for="item in noQuoteItems"
@@ -198,11 +239,10 @@ export default {
       >
         <td class="py-2">{{ item.DateSent }}</td>
         <td class="py-2 text-gray-500 font-semibold">{{ item.Company }}</td>
-        <td
-          class="py-2"
-          v-for="selectedYear in selectedYears"
-          v-bind:key="selectedYear"
-        ></td>
+        <template v-for="selectedYear in selectedYears">
+          <td class="py-2" v-bind:key="selectedYear + FIX"></td>
+          <td class="py-2" v-bind:key="selectedYear + FRN"></td>
+        </template>
       </tr>
     </tbody>
   </table>
