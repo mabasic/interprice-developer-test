@@ -172,12 +172,6 @@ export default {
     DropdownRow,
   },
   methods: {
-    handleSortColumnChange: function (sortColumn) {
-      this.sortColumn = sortColumn;
-      // NOTE: When the user changes the sort column,
-      // the sort direction should be descending.
-      this.sortDirection = DESC;
-    },
     getAverageQuoteValue: function (year, couponType) {
       const values = this.quoteItems
         .flatMap((item) => item.Quote)
@@ -211,8 +205,7 @@ export default {
           <SortButton
             label="Date Sent"
             :column="DATE_SENT"
-            :sortColumn="sortColumn"
-            v-on:update:sortColumn="handleSortColumnChange"
+            v-bind:sortColumn.sync="sortColumn"
             v-bind:sortDirection.sync="sortDirection"
           />
         </td>
@@ -220,8 +213,7 @@ export default {
           <SortButton
             :label="COMPANY"
             :column="COMPANY"
-            :sortColumn="sortColumn"
-            v-on:update:sortColumn="handleSortColumnChange"
+            v-bind:sortColumn.sync="sortColumn"
             v-bind:sortDirection.sync="sortDirection"
           />
         </td>

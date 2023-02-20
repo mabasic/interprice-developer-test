@@ -18,6 +18,11 @@ export default {
     changeSortDirection: function (column) {
       if (column !== this.sortColumn) {
         this.$emit("update:sortColumn", column);
+
+        // NOTE: When the user changes the sort column,
+        // the sort direction should be descending.
+        this.$emit("update:sortDirection", DESC);
+
         return;
       }
 
