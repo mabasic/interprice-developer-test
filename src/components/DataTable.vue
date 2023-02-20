@@ -273,6 +273,8 @@ export default {
           <td class="py-2" v-bind:key="selectedYear + FRN"></td>
         </template>
       </tr>
+    </tbody>
+    <tfoot>
       <tr class="border-2 border-gray-500">
         <td class="py-2"></td>
         <td class="py-2">Average by {{ selectedDisplay }}</td>
@@ -285,6 +287,6 @@ export default {
           </td>
         </template>
       </tr>
-    </tbody>
+    </tfoot>
   </table>
 </template>
