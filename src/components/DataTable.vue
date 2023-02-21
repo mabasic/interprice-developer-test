@@ -198,87 +198,84 @@ export default {
 </script>
 
 <template>
-  <table class="w-full">
-    <thead class="text-gray-500">
-      <tr>
-        <td rowspan="2" width="200" class="text-center align-bottom">
-          <SortButton
-            label="Date Sent"
-            :column="DATE_SENT"
-            v-bind:sortColumn.sync="sortColumn"
-            v-bind:sortDirection.sync="sortDirection"
-          />
-        </td>
-        <td rowspan="2" class="align-bottom">
-          <SortButton
-            :label="COMPANY"
-            :column="COMPANY"
-            v-bind:sortColumn.sync="sortColumn"
-            v-bind:sortDirection.sync="sortDirection"
-          />
-        </td>
-        <td
-          colspan="2"
-          width="200"
-          v-for="selectedYear in selectedYears"
-          v-bind:key="selectedYear"
-          class="px-1 last:pr-0"
-        >
-          <div
-            class="border-b-2 border-b-gray-500 font-bold text-gray-800 text-center"
-          >
-            {{ selectedYear }} YRS
-          </div>
-        </td>
-      </tr>
-      <tr class="border-b-2 border-gray-500">
-        <template v-for="selectedYear in selectedYears">
-          <td v-bind:key="selectedYear + FIX" width="100" class="text-center">
-            FIX
-          </td>
-          <td v-bind:key="selectedYear + FRN" width="100" class="text-center">
-            FRN
-          </td>
-        </template>
-      </tr>
-    </thead>
-    <tbody>
-      <DropdownRow
-        v-for="item in quoteItems"
-        v-bind:key="`${item.Company}-${item.Id}`"
-        :item="item"
-        :selectedYears="selectedYears"
-        :selectedDisplay="selectedDisplay"
-        :selectedCurrency="selectedCurrency"
-        :minimumValues="minimumValuesByYearAndCouponType"
+  <div class="mt-5">
+    <!-- Header -->
+    <div class="text-gray-500 flex border-b-2 border-gray-500 min-h-[52px]">
+      <div class="w-[200px] flex items-end justify-center">
+        <SortButton
+          label="Date Sent"
+          :column="DATE_SENT"
+          v-bind:sortColumn.sync="sortColumn"
+          v-bind:sortDirection.sync="sortDirection"
+        />
+      </div>
+      <div class="grow flex items-end">
+        <SortButton
+          :label="COMPANY"
+          :column="COMPANY"
+          v-bind:sortColumn.sync="sortColumn"
+          v-bind:sortDirection.sync="sortDirection"
+        />
+      </div>
+      <div
+        v-for="selectedYear in selectedYears"
+        v-bind:key="selectedYear"
+        class="w-[200px]"
       >
-      </DropdownRow>
-      <tr
+        <div
+          class="border-b-2 border-b-gray-500 font-bold text-gray-800 text-center mx-1"
+        >
+          {{ selectedYear }} YRS
+        </div>
+        <div class="flex">
+          <div class="w-1/2 text-center">FIX</div>
+          <div class="w-1/2 text-center">FRN</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Body quoteItems -->
+    <DropdownRow
+      v-for="item in quoteItems"
+      v-bind:key="`${item.Company}-${item.Id}`"
+      :item="item"
+      :selectedYears="selectedYears"
+      :selectedDisplay="selectedDisplay"
+      :selectedCurrency="selectedCurrency"
+      :minimumValues="minimumValuesByYearAndCouponType"
+    >
+    </DropdownRow>
+
+    <!-- Body noQuoteItems -->
+    <div>
+      <div
+        class="flex border-b last:border-none border-gray-500"
         v-for="item in noQuoteItems"
         v-bind:key="`${item.Company}-${item.Id}`"
-        class="border-b border-gray-500"
       >
-        <td class="py-2">{{ item.DateSent }}</td>
-        <td class="py-2 text-gray-500 font-semibold">{{ item.Company }}</td>
-        <template v-for="selectedYear in selectedYears">
-          <td class="py-2" v-bind:key="selectedYear + FIX"></td>
-          <td class="py-2" v-bind:key="selectedYear + FRN"></td>
-        </template>
-      </tr>
-    </tbody>
-    <tfoot>
-      <tr class="border-2 border-gray-500">
-        <td class="py-2"></td>
-        <td class="py-2">Average by {{ selectedDisplay }}</td>
-        <template v-for="selectedYear in selectedYears">
-          <td class="py-2 text-center" v-bind:key="selectedYear + FIX">
-            {{ getAverageQuoteValue(selectedYear, FIX) || "" }}
-          </td>
-          <td class="py-2 text-center" v-bind:key="selectedYear + FRN">
-            {{ getAverageQuoteValue(selectedYear, FRN) || "" }}
-          </td>
-        </template>
-      </tr>
-    </tfoot>
-  </table>
+        <div class="w-[200px] py-2">{{ item.DateSent }}</div>
+        <div class="grow py-2 text-gray-500 font-semibold">
+          {{ item.Company }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="flex border-2 border-gray-500">
+      <div class="w-[200px]"></div>
+      <div class="grow py-2">Average by {{ selectedDisplay }}</div>
+      <div
+        class="flex w-[200px]"
+        v-for="selectedYear in selectedYears"
+        v-bind:key="selectedYear"
+      >
+        <div class="w-1/2 text-center py-2">
+          {{ getAverageQuoteValue(selectedYear, FIX) || "" }}
+        </div>
+        <div class="w-1/2 text-center py-2">
+          {{ getAverageQuoteValue(selectedYear, FRN) || "" }}
+        </div>
+      </div>
+    </div>
+  </div>
 </template>

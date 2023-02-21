@@ -1,7 +1,6 @@
 <script>
 import ChevronDown from "./ChevronDown.vue";
 import ChevronRight from "./ChevronRight.vue";
-import { Fragment } from "vue-frag";
 import DISPLAYS, { format as formatDisplay } from "../constants/Display";
 import { FIX, FRN } from "../constants/CouponType";
 
@@ -28,7 +27,6 @@ export default {
     },
   },
   components: {
-    Fragment,
     ChevronDown,
     ChevronRight,
   },
@@ -70,9 +68,10 @@ export default {
 };
 </script>
 <template>
-  <Fragment>
-    <tr class="border-b border-gray-500">
-      <td class="py-2 flex items-center">
+  <div>
+    <!-- Primary Row -->
+    <div class="flex border-b border-gray-500">
+      <div class="w-[200px] py-2 flex items-center">
         <button
           @click="expanded = !expanded"
           class="p-1 text-gray-800"
@@ -83,52 +82,58 @@ export default {
           <ChevronRight v-else />
         </button>
         {{ item.DateSent }}
-      </td>
-      <td class="py-2 font-bold">{{ item.Company }}</td>
-      <template v-for="(values, selectedYear) in getQuoteValues()">
-        <td
-          class="text-center py-2"
+      </div>
+      <div class="grow py-2 font-bold">
+        {{ item.Company }}
+      </div>
+      <div
+        class="flex w-[200px]"
+        v-for="(values, selectedYear) in getQuoteValues()"
+        v-bind:key="`${item.Company}-${item.Id}-${selectedYear}`"
+      >
+        <div
+          class="w-1/2 text-center py-2"
           v-bind:class="[
             isMinimum(values[FIX], selectedYear, FIX) ? 'bg-yellow-100' : '',
           ]"
-          v-bind:key="`${item.Company}-${item.Id}-${selectedYear}-${FIX}`"
         >
           {{ values[FIX] }}
-        </td>
-        <td
-          class="text-center py-2"
+        </div>
+        <div
+          class="w-1/2 text-center py-2"
           v-bind:class="[
             isMinimum(values[FRN], selectedYear, FRN) ? 'bg-yellow-100' : '',
           ]"
-          v-bind:key="`${item.Company}-${item.Id}-${selectedYear}-${FRN}`"
         >
           {{ values[FRN] }}
-        </td>
-      </template>
-    </tr>
-    <template v-if="expanded === true && otherDisplays.length > 0">
-      <tr
+        </div>
+      </div>
+    </div>
+
+    <!-- Expanded Rows -->
+    <div v-if="expanded === true && otherDisplays.length > 0">
+      <div
+        class="flex border-b border-gray-500"
         v-for="otherDisplay in otherDisplays"
         v-bind:key="`${item.Company}-${item.Id}-${otherDisplay}`"
-        class="border-b border-gray-500"
       >
-        <td class="py-2"></td>
-        <td class="py-2">{{ otherDisplay }}</td>
-        <template v-for="selectedYear in selectedYears">
-          <td
-            class="text-center py-2"
-            v-bind:key="otherDisplay + selectedYear + FIX"
-          >
+        <div class="w-[200px] py-2"></div>
+        <div class="grow py-2">
+          {{ otherDisplay }}
+        </div>
+        <div
+          class="flex w-[200px]"
+          v-for="selectedYear in selectedYears"
+          v-bind:key="`${otherDisplay}-${selectedYear}`"
+        >
+          <div class="w-1/2 text-center py-2">
             {{ getQuoteValue(selectedYear, FIX, otherDisplay) }}
-          </td>
-          <td
-            class="text-center py-2"
-            v-bind:key="otherDisplay + selectedYear + FRN"
-          >
+          </div>
+          <div class="w-1/2 text-center py-2">
             {{ getQuoteValue(selectedYear, FRN, otherDisplay) }}
-          </td>
-        </template>
-      </tr>
-    </template>
-  </Fragment>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
