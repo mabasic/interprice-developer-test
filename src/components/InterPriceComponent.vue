@@ -6,7 +6,7 @@ import JSONDATA from "../data.json";
 import numericSort from "../helpers/numeric-sort";
 import DISPLAYS from "../constants/Display";
 
-function extractCurrencies(data) {
+export function extractCurrencies(data) {
   return [
     ...new Set(
       data.Items.flatMap((item) => item.Quote)
@@ -18,7 +18,7 @@ function extractCurrencies(data) {
     .reverse();
 }
 
-function extractYears(data, currency) {
+export function extractYears(data, currency) {
   return [
     ...new Set(
       data.Items.flatMap((item) => item.Quote)
