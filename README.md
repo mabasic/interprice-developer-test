@@ -8,6 +8,9 @@ Mockup:
 
 ![Mockup image](./mockup.jpg)
 
+Code coverage:
+
+![Coverage](./coverage.png)
 
 
 ## Remarks
@@ -47,6 +50,9 @@ https://v1.test-utils.vuejs.org/api/wrapper/
 
 ```sh
 npm run test:unit
+
+# code coverage
+npm run test:unit:coverage
 ```
 
 ### Lint with [ESLint](https://eslint.org/)

@@ -8,31 +8,32 @@ import DropdownRow from "./DropdownRow.vue";
 import { FIX, FRN } from "../constants/CouponType";
 import { format as formatDisplay } from "../constants/Display";
 
-function extractItemsWithNoQuote(data) {
+export function extractItemsWithNoQuote(data) {
   return data.filter((item) => !item.Quote);
 }
 
-function extractItemsWithQuote(data) {
+export function extractItemsWithQuote(data) {
   return data.filter((item) => !!item.Quote);
 }
 
-function filterByCompanyFilter(data, companyFilter) {
+export function filterByCompanyFilter(data, companyFilter) {
   return data.filter(
     (item) =>
       item.Company.toLowerCase().indexOf(companyFilter.toLowerCase()) !== -1
   );
 }
 
-function parseDateSentToDate(data) {
+export function parseDateSentToDate(data) {
   return data.map((item) => ({
     ...item,
     DateSent: !item.DateSent ? null : new Date(item.DateSent),
   }));
 }
 
-function formatDateSent(data) {
+export function formatDateSent(data) {
   return data.map((item) => {
     const date = item.DateSent;
+
     if (!date) {
       return {
         ...item,
@@ -57,11 +58,11 @@ function formatDateSent(data) {
   });
 }
 
-function toLowerCaseIfString(value) {
+export function toLowerCaseIfString(value) {
   return typeof value === "string" ? value.toLowerCase() : value;
 }
 
-function sortItemsBy(data, field, direction) {
+export function sortItemsBy(data, field, direction) {
   const sortFunc = (a, b) => {
     const x = toLowerCaseIfString(direction === DESC ? b[field] : a[field]);
     const y = toLowerCaseIfString(direction === DESC ? a[field] : b[field]);
