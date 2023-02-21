@@ -11,13 +11,17 @@ import ToggleSingle from "../../components/ToggleSingle.vue";
 
 describe("InterPriceComponent", () => {
   it("renders properly", () => {
-    const wrapper = mount(InterPriceComponent);
+    const wrapper = mount(InterPriceComponent, {
+      propsData: { items: JSONDATA },
+    });
 
     expect(wrapper).toBeTruthy();
   });
 
   it("updates the companyFilter on text input", async () => {
-    const wrapper = mount(InterPriceComponent);
+    const wrapper = mount(InterPriceComponent, {
+      propsData: { items: JSONDATA },
+    });
 
     expect(wrapper.vm.companyFilter).toEqual("");
 
@@ -28,7 +32,9 @@ describe("InterPriceComponent", () => {
   });
 
   it("handles years change event", async () => {
-    const wrapper = mount(InterPriceComponent);
+    const wrapper = mount(InterPriceComponent, {
+      propsData: { items: JSONDATA },
+    });
 
     const yearsToggle = wrapper.getComponent(ToggleMulti);
 
@@ -43,7 +49,9 @@ describe("InterPriceComponent", () => {
   });
 
   it("handles currency change event", async () => {
-    const wrapper = mount(InterPriceComponent);
+    const wrapper = mount(InterPriceComponent, {
+      propsData: { items: JSONDATA },
+    });
 
     const currencyToggle = wrapper.findAllComponents(ToggleSingle).at(0);
 
@@ -62,7 +70,9 @@ describe("InterPriceComponent", () => {
   });
 
   it("handles display change event", async () => {
-    const wrapper = mount(InterPriceComponent);
+    const wrapper = mount(InterPriceComponent, {
+      propsData: { items: JSONDATA },
+    });
 
     const displayToggle = wrapper.findAllComponents(ToggleSingle).at(1);
 
@@ -79,7 +89,9 @@ describe("InterPriceComponent", () => {
   });
 
   it("returns computed years", () => {
-    const wrapper = mount(InterPriceComponent);
+    const wrapper = mount(InterPriceComponent, {
+      propsData: { items: JSONDATA },
+    });
 
     expect(wrapper.vm.years).toEqual([5, 10, 40]);
   });

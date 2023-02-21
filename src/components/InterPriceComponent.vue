@@ -2,7 +2,6 @@
 import ToggleSingle from "./ToggleSingle.vue";
 import ToggleMulti from "./ToggleMulti.vue";
 import DataTable from "./DataTable.vue";
-import JSONDATA from "../data.json";
 import numericSort from "../helpers/numeric-sort";
 import DISPLAYS from "../constants/Display";
 
@@ -30,11 +29,11 @@ export function extractYears(data, currency) {
 }
 
 export default {
-  created() {
-    this.JSONDATA = JSONDATA;
+  props: {
+    items: Object,
   },
   data: function () {
-    const currencies = extractCurrencies(JSONDATA);
+    const currencies = extractCurrencies(this.items);
     const selectedCurrency = currencies?.[0];
 
     return {
@@ -42,7 +41,7 @@ export default {
       selectedCurrency: selectedCurrency,
       displays: DISPLAYS,
       selectedDisplay: DISPLAYS[0],
-      selectedYears: extractYears(JSONDATA, selectedCurrency),
+      selectedYears: extractYears(this.items, selectedCurrency),
       companyFilter: "",
     };
   },
@@ -60,7 +59,7 @@ export default {
   },
   computed: {
     years: function () {
-      return extractYears(JSONDATA, this.selectedCurrency);
+      return extractYears(this.items, this.selectedCurrency);
     },
   },
   components: {
@@ -93,7 +92,7 @@ export default {
       :selectedDisplay="selectedDisplay"
       :displays="displays"
       :selectedCurrency="selectedCurrency"
-      :items="JSONDATA.Items"
+      :items="items.Items"
     />
   </div>
 </template>
